@@ -1,0 +1,96 @@
+# Bui Tuan Phong
+
+.data
+	largest: .asciiz "Largest: "
+	smallest: .asciiz "\nSmallest: "
+	comma: .asciiz ","
+.text
+Main: 
+	li $s0, 1
+	li $s1, -6
+	li $s2, 5
+	li $s3, 0
+	li $s4, -9
+	li $s5, 2
+	li $s6, 7
+	li $s7, -2
+	jal Store
+	nop
+	# Print message Largest
+    li  $v0, 4
+    la  $a0, largest
+    syscall
+    # Print Max
+    add  $a0, $t0, $zero
+    li  $v0, 1
+    syscall
+    # Print message Comma
+    li  $v0, 4
+    la  $a0, comma
+    syscall
+    # Print the register number of Max
+    add  $a0, $t5, $zero
+    li  $v0, 1
+    syscall
+    # Print message Smallest
+    li  $v0, 4
+    la  $a0, smallest
+    syscall
+    # Print Min
+    add  $a0, $t1, $zero
+    li  $v0, 1
+    syscall
+    # Print message Comma
+    li  $v0, 4
+    la  $a0, comma
+    syscall
+    # Print the register number of Min
+    add  $a0, $t6, $zero
+    li  $v0, 1
+    syscall
+    # Exit
+    li  $v0, 10
+    syscall
+EndMain:
+ 
+Store:
+    add  $t9, $sp, $zero
+    addi $sp, $sp, -32
+    sw   $s1, 0($sp)
+    sw   $s2, 4($sp)
+    sw   $s3, 8($sp)
+    sw   $s4, 12($sp)
+    sw   $s5, 16($sp)
+    sw   $s6, 20($sp)
+    sw   $s7, 24($sp)
+    sw   $ra, 28($sp)  		# Save $ra for main
+    add  $t0, $s0, $zero  	# Max = $s0
+    add  $t1, $s0, $zero 	# Min = $s0
+    li   $t5, 0           	# Index of Max to 0
+    li   $t6, 0           	# Index of Min to 0
+    li   $t2, 0           	# i = 0
+Compare:
+    addi $sp, $sp, 4
+    lw   $t3, -4($sp)
+    sub  $t4, $sp, $t9
+    beq  $t4, $zero, Done  	# If $sp = $fp => Done
+    nop
+    addi $t2, $t2, 1       	# i++
+    sub  $t4, $t0, $t3
+    bltz $t4, SwapMax    	# If $t3 > Max => SwapMax
+    nop
+    sub  $t4, $t3, $t1
+    bltz $t4, SwapMin    	# If $t3 < Min => SwapMin
+    nop
+    j    Compare        	# Repeat
+SwapMax:
+    add  $t0, $t3, $zero
+    add  $t5, $t2, $zero
+    jr   $ra
+SwapMin:
+    add  $t1, $t3, $zero
+    add  $t6, $t2, $zero
+    jr   $ra
+Done:
+    lw   $ra, -4($sp)
+    jr   $ra

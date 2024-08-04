@@ -1,0 +1,61 @@
+.data
+	A: .word 99, -23, 22, 0, 1, -5, 12, 5, -5, 0
+	Aend: .word
+	Mess1: .asciiz "Sort: "
+	Mess2: .asciiz "End\n"
+	Mess3: .asciiz ", "
+.text
+Main:
+	la $a1, A					
+	addi $a1, $a1, -4			# $a1 = Address of A[-1]
+	la $a2, Aend
+	addi $a2, $a2, 0			# $a2 = Address of A[n]
+	la $a3, A					
+	addi $a3, $a3, 0			# $a3 = Address of A[0] = A[i] (i = 0)
+	j LoopSort
+EndMain:
+ 
+LoopInsert:
+	beq $s3, $a1, LoopSort
+	lw $t1, 0($s4)
+	lw $t2, 0($s3)
+	bgt $t2, $t1, Swap
+EndSwap:
+	addi $s3, $s3, -4
+	addi $s4, $s4, -4
+ 
+	j LoopInsert
+EndInsert:
+ 
+Swap:
+	sw $t1, 0($s3)
+	sw $t2, 0($s4)
+ 
+	j EndSwap
+LoopSort:
+	beq $a3, $a2, EndSort
+	addi $a3, $a3, 4			# $a3 = Address of A[i+1]
+	addi $s4, $a3, 0			# $s4 = Address of A[i+1]
+	addi $s3, $a3, -4			# $s3 = Address of A[i]
+	j LoopInsert
+EndSort:
+	li $v0, 4
+	la $a0, Mess1
+	syscall
+Print:
+	la $a1, A
+	la $a2, Aend
+	addi $a2, $a2, -4			# $a2 = Address of A[n-1] = A[i] (i=n-1)
+PrintLoop:
+	li $v0, 1
+	lw $t0, 0($a1)
+	addi $a0, $t0, 0
+	syscall
+	beq $a1, $a2, Exit
+	addi $a1, $a1, 4
+	li $v0, 4
+	la $a0, Mess3
+	syscall
+	j PrintLoop
+Exit:
+ 

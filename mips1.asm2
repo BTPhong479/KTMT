@@ -1,0 +1,13 @@
+# Bùi Tu?n Phong MSSV 20225900
+
+.text
+li $s1,1
+li $s2,30
+
+lap:
+bgt $s1,$s2,exit
+sll $s1,$s1,1
+j lap
+
+
+exit:

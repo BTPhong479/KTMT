@@ -1,0 +1,60 @@
+.eqv KEY_CODE   0xFFFF0004       # ASCII code from keyboard, 1 byte 
+.eqv KEY_READY  0xFFFF0000       # =1 if has a new keycode ? 
+# Auto clear after lw 
+.eqv DISPLAY_CODE   0xFFFF000C   # ASCII code to show, 1 byte 
+.eqv DISPLAY_READY  0xFFFF0008   # =1 if the display has already to do 
+# Auto clear after sw 
+.text 
+li   $k0,  KEY_CODE 
+li   $k1,  KEY_READY 
+li   $s0, DISPLAY_CODE 
+li   $s1, DISPLAY_READY 
+li $s2,0
+loop:
+
+WaitForKey:  lw   $t1, 0($k1)            # $t1 = [$k1] = KEY_READY 
+nop 
+beq  $t1, $zero, WaitForKey # if $t1 == 0 then Polling 
+nop 
+#----------------------------------------------------- 
+ReadKey:     lw   $t0, 0($k0)            # $t0 = [$k0] = KEY_CODE 
+beq $t0, 'e', checke
+beq $t0, 'x', checkx
+
+beq $t0, 'i', checki
+beq $t0, 't', checkt
+nop 
+WaitForDis1: li $s2, 0
+#----------------------------------------------------- 
+WaitForDis:  lw   $t2, 0($s1)            # $t2 = [$s1] = DISPLAY_READY 
+nop
+beq  $t2, $zero, WaitForDis # if $t2 == 0 then Polling              
+nop              
+#----------------------------------------------------- 
+Encrypt:     addi $t0, $t0, 0          # change input key 
+#----------------------------------------------------- 
+ShowKey:     sw $t0, 0($s0)              # show key 
+nop                
+#-----------------------------------------------------             
+j loop 
+nop 
+
+checke:
+	addi $s2,$s2,1
+	j WaitForDis
+checkx:
+	bne $s2, 1, WaitForDis1
+	addi $s2,$s2, 1
+	j WaitForDis
+checki:
+	bne $s2, 2, WaitForDis1
+	addi $s2,$s2, 1
+	j WaitForDis
+checkt:
+	bne $s2, 3, WaitForDis1
+	
+	li $t0, 10
+	syscall
+
+	
+

@@ -1,0 +1,53 @@
+#	div $t0, $t1     # Chia $t0 cho $t1
+#        mflo $t2         # Move th??ng t? LO vào $t2
+#        mfhi $t3         # Move s? d? t? HI vào $t3
+.data
+string: .asciiz" tran bit"
+.text
+	li $v1, 2000000000
+	li $v0,5
+	syscall
+	add $s1,$v0,$zero
+	
+	bgt $s1,$v1,L4
+
+	
+		#so bi chia n
+	li $s2,10	#so chia
+	li $s3,10
+	li $s4,1
+	li $a0,0	# count =0
+L:	blt $s1, $s3, L1
+	li $a1,0	#sum=0
+L3:	blt $s1, $s4,L2
+	div $s1, $s2
+	mflo $s1 #thuong
+	mfhi $s5 #du
+	add $a1, $a1,$s5
+	j L3
+L2:
+	addi $s1,$a1,0
+	addi $a0,$a0,1
+	j L
+L1: 
+	li $v0,1
+	syscall
+	li $v0,10
+	syscall
+L4:	li $v0, 4
+	la $a0, string
+	syscall
+
+#int sltt(int n){
+#count =0;
+#while(n>9){
+#	sum =0;
+#	while(n>0){
+#		sum += n%10;
+#		n = n/10;
+#		}
+#	n= sum;
+#	count +=1
+#	}
+#return count
+#}
